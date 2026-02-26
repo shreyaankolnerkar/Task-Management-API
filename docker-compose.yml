@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: task_management
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres.xmpnadeueymnrkqlrypd:Shreya%239399@aws-1-ap-south-1.pooler.supabase.com:6543/postgres
