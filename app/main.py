@@ -1,5 +1,4 @@
-from fastapi import Depends, FastAPI
-from sqlalchemy import text
+from fastapi import FastAPI
 
 from app.db.models import Base
 from app.db.session import engine

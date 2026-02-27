@@ -5,3 +5,5 @@ passlib[bcrypt]
 python-jose
 psycopg2-binary
 python-dotenv
+celery
+redis

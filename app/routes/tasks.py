@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.authentication.permissions import require_admin
 from app.db.models import Task, User
 from app.db.session import get_db
+from app.tasks.email_tasks import send_task_assigned_email
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
@@ -14,9 +15,9 @@ router = APIRouter(prefix="/tasks", tags=["Tasks"])
 def create_task(
     title: str,
     team_id: int,
-    description: str | None = None,
-    priority: str | None = None,
-    due_date: datetime | None = None,
+    description: str | None ,
+    priority: str | None,
+    due_date: datetime | None,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
@@ -40,11 +41,11 @@ def create_task(
 @router.put("/{task_id}")
 def update_task(
     task_id: int,
-    title: str | None = None,
-    description: str | None = None,
-    status: str | None = None,
-    priority: str | None = None,
-    due_date: datetime | None = None,
+    title: str | None,
+    description: str | None,
+    status: str | None,
+    priority: str | None,
+    due_date: datetime | None,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
@@ -77,20 +78,29 @@ def assign_task(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
+    
     task = db.get(Task, task_id)
-
     if not task:
         raise HTTPException(404, "Task not found")
 
+    
     assignee = db.get(User, assigned_to)
     if not assignee:
         raise HTTPException(404, "User not found")
+
 
     task.assigned_to = assigned_to
     db.commit()
     db.refresh(task)
 
-    return task
+    
+    send_task_assigned_email.delay(
+        assignee.email,   
+        task.title,       
+        admin.name if hasattr(admin, "name") else "Admin"
+    )
+
+    return {"message": "Task assigned & email sent"}
 
 
 @router.delete("/{task_id}")
