@@ -9,14 +9,26 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres.xmpnadeueymnrkqlrypd:Shreya%239399@aws-1-ap-south-1.pooler.supabase.com:6543/postgres
       REDIS_URL: redis://redis:6379/0
+      SMTP_EMAIL: shreyaankolnerkar@gmail.com
+      SMTP_PASSWORD: kcmgisiwvwiotdlp
     depends_on:
       - redis
-  
-  
+
+  worker:
+    build: .
+    container_name: task_management_worker
+    command: celery -A app.core.celery worker -l info
+    environment:
+      DATABASE_URL: postgresql://postgres.xmpnadeueymnrkqlrypd:Shreya%239399@aws-1-ap-south-1.pooler.supabase.com:6543/postgres
+      REDIS_URL: redis://redis:6379/0
+      SMTP_EMAIL: shreyaankolnerkar@gmail.com
+      SMTP_PASSWORD: kcmgisiwvwiotdlp
+    depends_on:
+      - api
+      - redis
+
   redis:
     image: redis:7
     container_name: redis
     ports:
       - "6379:6379"
-
-  
