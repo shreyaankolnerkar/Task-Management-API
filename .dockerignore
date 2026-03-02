@@ -4,5 +4,3 @@ __pycache__
 *.pyd
 .venv
 .gitignore
-Dockerfile
-docker-compose.yml
