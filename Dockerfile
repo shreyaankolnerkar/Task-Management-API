@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD bash -c "celery -A app.celery_worker.celery worker --loglevel=info & uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+CMD bash -c "celery -A app.core.celery.celery_app worker --loglevel=info & uvicorn app.main:app --host 0.0.0.0 --port $PORT"
